@@ -6,18 +6,23 @@ export async function POST(req: NextRequest) {
     try {
         await connectDB();
         const formData = await req.formData();
-        let event;
-        try {
-            event = Object.fromEntries(formData.entries());
-        } catch (e) {
-            return NextResponse.json({ message: 'Invalid JSON format data.' }, { status: 400 })
-        }
+        const event = Object.fromEntries(formData.entries());
         const file = formData.get('image') as File
         if (!file) return NextResponse.json({ message: 'No image is Provided' }, { status: 400 })
 
+        let tags;
+        try {
+            tags = JSON.parse(formData.get('tags') as string);
+        } catch (e) {
+            return NextResponse.json({ message: 'Invalid JSON in tags' }, { status: 400 });
+        }
 
-        let tags = JSON.parse(formData.get('tags') as string)
-        let agenda = JSON.parse(formData.get('agenda') as string)
+        let agenda;
+        try {
+            agenda = JSON.parse(formData.get('agenda') as string);
+        } catch (e) {
+            return NextResponse.json({ message: 'Invalid JSON in agenda' }, { status: 400 });
+        }
 
 
 

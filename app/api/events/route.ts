@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
         }
 
         return NextResponse.json(
-            { message: 'Event creation failed', error: error.message || 'Unknown error' },
+            { message: 'Event creation failed' },
             { status: 500 }
         )
     }

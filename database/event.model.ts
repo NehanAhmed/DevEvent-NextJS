@@ -29,7 +29,6 @@ const EventSchema = new Schema<IEvent>(
     },
     slug: {
       type: String,
-      unique: true,
       lowercase: true,
       trim: true,
     },
@@ -106,8 +105,8 @@ const EventSchema = new Schema<IEvent>(
   }
 );
 
-// Pre-save hook to generate slug, normalize date and time
-EventSchema.pre('save', function (next) {
+// Pre-save hook to generate slug, normalize date and time, and check for duplicates
+EventSchema.pre('save', async function (next) {
   // Generate URL-friendly slug from title if title has changed
   if (this.isModified('title')) {
     this.slug = this.title
@@ -117,6 +116,18 @@ EventSchema.pre('save', function (next) {
       .replace(/\s+/g, '-') // Replace spaces with hyphens
       .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
       .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+  }
+
+  // Check for duplicate slug only if slug is new or modified
+  if (this.isModified('slug')) {
+    const existingEvent = await model<IEvent>('Event').findOne({
+      slug: this.slug,
+      _id: { $ne: this._id }, // Exclude current document when updating
+    });
+
+    if (existingEvent) {
+      return next(new Error('An event with this slug already exists'));
+    }
   }
 
   // Normalize date to ISO format (YYYY-MM-DD)

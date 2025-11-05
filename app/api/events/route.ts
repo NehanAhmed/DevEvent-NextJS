@@ -75,6 +75,7 @@ export async function GET() {
         const events = await Event.find().sort({ createdAt: -1 });
         return NextResponse.json({ message: 'Event Fetched Successfully', events }, { status: 200 })
     } catch (error) {
-        return NextResponse.json({ message: "Event Fetching Failed", error: error }, { status: 500 })
+        console.error('Event fetching error:', error)
+        return NextResponse.json({ message: "Event Fetching Failed" }, { status: 500 })
     }
 }

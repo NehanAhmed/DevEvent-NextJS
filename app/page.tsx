@@ -7,7 +7,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const Page = async () => {
   'use cache'
 
-  catcheLife('hours');
+  cacheLife('hours');
   const base = BASE_URL ?? "http://localhost:3000";
   const result = await fetch(`${base}/api/events`, { next: { revalidate: 60 } });
   const { events } = await result.json();
